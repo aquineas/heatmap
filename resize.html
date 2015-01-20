@@ -22,6 +22,11 @@
     d3.text(csvData,
         function(text)
         {
+            /*
+             * Used to track the highest and lowest data points in the input data.
+             * The high point is used as the darkest color, the low the lightest
+             * The difference between the two split into even sized quanta
+             */
             var dataHigh = 0,
                 dataLow = 0;
             
