@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Page Title</title>    
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="css/heatmap.css">
+    
+</head>
+
+<body>
+
+
+
+<script type="text/javascript">
+    
+    var svgHeight = 500;
+    var svgWidth = 500;
+ 
+    var csvData = "data/dataset.csv"
+ 
+    d3.text(csvData,
+        function(text)
+        {
+            var dataHigh = 0,
+                dataLow = 0;
+            
+            /*
+             * Extract rows of data from the provided CSV
+             *
+             * Search through the data to find the high and low
+             * values to determine the color categories.
+             */
+            var dataset = d3.csv.parseRows(text, function (d)
+                    {
+                        for (var i=0; i<d.length; ++i)
+                        {
+                            if (d[i] > dataHigh) { dataHigh = d[i]; }
+                            if (d[i] < dataLow) { dataLow = d[i]; }
+                        }
+                        return d;
+                    }
+                );
+            
+            /*
+             * Determine the scale of the color categories
+             */
+            
+            /* Finish this
+            
+            fill in proper quantum scales
+            
+            */
+            //var q = d3.scale.quantize().domain([dataLow, dataHigh]).range(['qb1', 'qb2', 'qb3', 'qb4', 'qb5', 'qb6', 'qb7', 'qb8']);
+            var q = d3.scale.quantize().domain([dataLow, dataHigh]).range(['qr1', 'qr2', 'qr3', 'qr4', 'qr5', 'qr6']);
+            
+            var unitHeight = svgHeight / dataset.length;
+            var unitWidth = svgWidth / dataset[0].length;
+    
+            var svgObj = d3.select("body")
+                .append("svg")
+                .attr("width",svgWidth)
+                .attr("height",svgHeight);
+
+            svgObj.append("svg:image")
+            .attr("xlink:href", "images/sf.svg")
+            .attr("width", svgHeight)
+            .attr("height", svgWidth)
+            .attr("x", 0)
+            .attr("y",0);
+            
+        svgObj.selectAll("g")
+            .data(dataset)
+            .enter()
+            .append("g")
+            .selectAll("rect")
+            .data(Object)
+            .enter()
+            .append("rect")
+            .attr("x", function (d,i,j)
+                {
+                    return i*unitWidth;
+                }
+            )
+            .attr("y", function (d,i,j)
+                {
+                    return j*unitHeight;
+                }
+             )
+            .attr("width",unitWidth)
+            .attr("height",unitHeight)
+            .attr("class", function(d)
+                {
+                    return q(d);    
+                }
+            );        
+        }
+    );
+        
+        /*
+         *.attr("fill", function(d)
+                {
+                    return "rgba(200,0,0," + d/5 + ")";
+                }
+            )
+            
+            */
+        
+        
+</script>
+
+
+</body>
+</html>
