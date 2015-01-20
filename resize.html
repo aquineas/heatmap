@@ -19,8 +19,7 @@
  
     var csvData = "data/dataset.csv"
  
-    d3.text(csvData,
-        function(text)
+    d3.text(csvData, function(text)
         {
             /*
              * Used to track the highest and lowest data points in the input data.
@@ -30,6 +29,7 @@
             var dataHigh = 0,
                 dataLow = 0;
             
+            
             /*
              * Extract rows of data from the provided CSV
              *
@@ -37,20 +37,30 @@
              * values to determine the color categories.
              */
             var dataset = d3.csv.parseRows(text, function (d)
+                {
+                    for (var i=0; i<d.length; ++i)
                     {
-                        for (var i=0; i<d.length; ++i)
-                        {
-                            if (d[i] > dataHigh) { dataHigh = d[i]; }
-                            if (d[i] < dataLow) { dataLow = d[i]; }
-                        }
-                        return d;
+                        if (d[i] > dataHigh) { dataHigh = d[i]; }
+                        if (d[i] < dataLow) { dataLow = d[i]; }
                     }
-                );
+                    return d;
+                }
+            );
             
 
+            
+            /*
+             * Create quantum function based on the delta between highes and lows in the data set
+             */
+            
             //var q = d3.scale.quantize().domain([dataLow, dataHigh]).range(['qb1', 'qb2', 'qb3', 'qb4', 'qb5', 'qb6', 'qb7', 'qb8']);
             var q = d3.scale.quantize().domain([dataLow, dataHigh]).range(['qr1', 'qr2', 'qr3', 'qr4', 'qr5', 'qr6']);
             
+            
+            /*
+             * Determine the height and width of the visual heat map units based on the provided underlay
+             * image
+             */
             var unitHeight = svgHeight / dataset.length;
             var unitWidth = svgWidth / dataset[0].length;
     
@@ -60,49 +70,39 @@
                 .attr("preserveAspectRatio", "xMidYMin meet");
 
             svgObj.append("svg:image")
-            .attr("xlink:href", "images/sf.svg")
-            .attr("width", svgHeight)
-            .attr("height", svgWidth)
-            .attr("x", 0)
-            .attr("y",0);
+                .attr("xlink:href", "images/sf.svg")
+                .attr("width", svgHeight)
+                .attr("height", svgWidth)
+                .attr("x", 0)
+                .attr("y",0);
             
-        svgObj.selectAll("g")
-            .data(dataset)
-            .enter()
-            .append("g")
-            .selectAll("rect")
-            .data(Object)
-            .enter()
-            .append("rect")
-            .attr("x", function (d,i,j)
-                {
-                    return i*unitWidth;
-                }
-            )
-            .attr("y", function (d,i,j)
-                {
-                    return j*unitHeight;
-                }
-             )
-            .attr("width",unitWidth)
-            .attr("height",unitHeight)
-            .attr("class", function(d)
-                {
-                    return q(d);    
-                }
-            );        
+            svgObj.selectAll("g")
+                .data(dataset)
+                .enter()
+                .append("g")
+                .selectAll("rect")
+                .data(Object)
+                .enter()
+                .append("rect")
+                .attr("x", function (d,i,j)
+                    {
+                        return i*unitWidth;
+                    }
+                )
+                .attr("y", function (d,i,j)
+                    {
+                        return j*unitHeight;
+                    }
+                 )
+                .attr("width",unitWidth)
+                .attr("height",unitHeight)
+                .attr("class", function(d)
+                    {
+                        return q(d);    
+                    }
+                );        
         }
     );
-        
-        /*
-         *.attr("fill", function(d)
-                {
-                    return "rgba(200,0,0," + d/5 + ")";
-                }
-            )
-            
-            */
-        
         
 </script>
 
